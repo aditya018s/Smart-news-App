@@ -30,7 +30,8 @@ export default function Homepage() {
       }
 
       let response = await fetch(
-        `https://newsapi.org/v2/everything?q=${q}&sortBy=publishedAt&language=${language}&page=${pageNumber}&pageSize=24&apiKey=${NEWS_API_KEY}`,
+        // Proxy route — request goes through Netlify Function to NewsAPI (avoids browser CORS block on free plan)
+        `/api/news?q=${q}&language=${language}&page=${pageNumber}`,
         { signal: controller.signal },
       );
       return await response.json();
