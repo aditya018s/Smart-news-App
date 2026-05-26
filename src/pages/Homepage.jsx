@@ -30,7 +30,8 @@ export default function Homepage() {
       }
 
       let response = await fetch(
-        `https://newsapi.org/v2/everything?q=${q}&sortBy=publishedAt&language=${language}&page=${pageNumber}&pageSize=24&apiKey=${NEWS_API_KEY}`,
+        // CHANGED: switched from newsapi.org to gnews.io — newsapi.org blocks browser requests on free plan (localhost only)
+        `https://gnews.io/api/v4/search?q=${q}&lang=${language}&page=${pageNumber}&max=10&token=${NEWS_API_KEY}`,
         { signal: controller.signal },
       );
       return await response.json();
@@ -46,9 +47,10 @@ export default function Homepage() {
 
     try {
       let response = await fetchNewsPage(q, language, 1);
-      if (response.status === "ok") {
+      // CHANGED: gnews returns "success" instead of "ok", and "totalArticles" instead of "totalResults"
+      if (response.status === "success") {
         setArticles(response.articles);
-        setTotalResults(response.totalResults);
+        setTotalResults(response.totalArticles);
       } else {
         setArticles([]);
         setTotalResults(0);
@@ -68,7 +70,8 @@ export default function Homepage() {
     setPage(nextPage);
     try {
       let response = await fetchNewsPage(q, language, nextPage);
-      if (response.status === "ok") {
+      // CHANGED: gnews returns "success" instead of "ok"
+      if (response.status === "success") {
         setArticles(articles.concat(response.articles));
       }
     } catch {
@@ -119,7 +122,8 @@ export default function Homepage() {
                   title={item.title}
                   description={item.description}
                   url={item.url}
-                  pic={item.urlToImage}
+                  // CHANGED: gnews uses "image" instead of "urlToImage"
+                  pic={item.image}
                   date={item.publishedAt}
                 />
               );
